@@ -16,13 +16,11 @@ function Home() {
   useEffect(() => {
     if (!state.connected) return;
     sendMessage(MsgType.JobList).then((res) => {
-      console.log(res.data);
       setJobs(res.data);
     });
   }, [state.connected]);
 
   const tabs = useMemo<Tab[]>(() => {
-    // console.log('jobs', jobs);
     const favorJobs = jobs.filter((job: any) => state.favors.includes(job.name));
     return [
       {

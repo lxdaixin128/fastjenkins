@@ -54,7 +54,7 @@ function JobItem(props: any) {
         res = res.data;
         params.since = res.name;
         const isNewBuild = res.id !== lastBuild.id;
-        console.log('res', res);
+        // console.log('res', res);
         if (isNewBuild) {
           const stages: any[] = res.stages;
           const lastStage = stages.length ? stages[stages.length - 1] : stageInit;

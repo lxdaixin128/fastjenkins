@@ -60,7 +60,7 @@ class SidebarViewProvider implements vscode.WebviewViewProvider {
 					<link href="${styleResetUri}" rel="stylesheet">
 				</head>
 				<body>
-					<div id="root">root</div>
+					<div id="root">渲染失败...</div>
           <script nonce="${nonce}" src="${scriptVscodeUri}"></script>
 					<script nonce="${nonce}" src="${scriptUri}"></script>
 				</body>

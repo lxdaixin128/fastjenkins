@@ -1,14 +1,26 @@
 {
   "name": "fastjenkins",
-  "version": "1.0.0",
-  "description": "vscode-plugin",
+  "displayName": "Fast Jenkins",
+  "version": "1.0.2",
+  "description": "conveniently access jenkins and build your jobs.",
   "main": "./dist/extension.js",
   "author": "MorningWinter",
   "license": "MIT",
+  "publisher": "morningwinter",
   "icon": "static/jenkins.png",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "muyuan",
+    "jenkins",
+    "fast",
+    "morningwinter",
+    "build"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/daffodil/fastjenkins"
+    "url": "https://gitee.com/daffodil/fastjenkins/"
   },
   "activationEvents": [
     "onView:fastJenkins.sidebarView",
@@ -73,7 +85,7 @@
         "fastjenkins.propertyFilter": {
           "type": "string",
           "default": null,
-          "description": "不需要显示的属性字段(用','隔开)"
+          "description": "项目展开后不需要显示的属性字段(用','隔开)"
         }
       }
     }
@@ -85,6 +97,7 @@
     "vscode:prepublish": "node build/package.js",
     "build": "node build/package.js",
     "package": "vsce package --no-yarn",
+    "publish": "vsce publish",
     "watch": "node build/preLaunchTask.js",
     "lint:prettier": "prettier --write ."
   },

@@ -1,7 +1,7 @@
-import { createContext, useReducer } from 'react';
+import { createContext } from 'react';
 const vscode = window.vscode;
 export const AppContext = createContext<any>(null);
-const favors: string[] = vscode.getState().favors || [];
+const favors: string[] = vscode.getState()?.favors || [];
 
 export const appState = {
   connected: 0,

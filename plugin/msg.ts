@@ -38,7 +38,6 @@ msgCenter.subscribe(MsgType.JobList, function () {
     url: `/api/json?tree=jobs[name,property[parameterDefinitions[description,defaultParameterValue[name,value]]],lastBuild[id,duration,estimatedDuration,timestamp,result]]`,
   }).then((res: any) => {
     res = res.data;
-    console.log(filterArray, res.data);
     return res.jobs.map((job: any) => {
       const properties = job.property
         .find((e: any) => e._class === 'hudson.model.ParametersDefinitionProperty')
