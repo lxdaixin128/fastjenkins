@@ -84,7 +84,7 @@
   "scripts": {
     "vscode:prepublish": "node build/package.js",
     "build": "node build/package.js",
-    "package": "vsce package",
+    "package": "vsce package --no-yarn",
     "watch": "node build/preLaunchTask.js",
     "lint:prettier": "prettier --write ."
   },
