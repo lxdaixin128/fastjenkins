@@ -1,0 +1,38 @@
+{
+  "editor.detectIndentation": false, // 关闭基于文件内容自动检测缩进大小
+  "editor.tabSize": 2, // 代码缩进 2 个空格
+  "editor.formatOnSave": true, // 保存文件时自动格式化, 会调用默认格式化工具
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true // 触发eslint
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // 设置默认格式化工具为 Prettier - Code formatter
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode" // 为 vue 后缀的文件配置默认的代码格式化工具
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "stylelint.validate": [],
+  "less.validate": false
+}

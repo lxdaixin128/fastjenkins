@@ -1,0 +1,195 @@
+@ConnectorHeight: 44px;
+
+[react-component='Home'] {
+  position: relative;
+  height: 100vh;
+  .tabContainer {
+    padding: 8px 8px 0 8px;
+    height: calc(100% - @ConnectorHeight);
+  }
+  .emptyJobs {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+[react-component='JobItem'] {
+  @margin: 8px;
+  border: 2px solid #333333;
+  border-radius: 4px;
+  margin-top: @margin;
+  &:last-child {
+    margin-bottom: @margin;
+  }
+  .header {
+    position: relative;
+    padding: 6px;
+    border-bottom: 2px solid #333333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .title {
+      font-size: 14px;
+      user-select: none;
+      word-break: break-all;
+      flex: 1;
+    }
+    .icon {
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .anticon {
+        font-size: 14px;
+        transition: all 0.3s;
+        font-weight: 600;
+      }
+      .loadingThunder {
+        color: #ffc53d;
+        font-size: 24px;
+      }
+    }
+  }
+
+  .collapseSection {
+    position: relative;
+    overflow: hidden;
+    transition: height 0.2s;
+    .property {
+      height: 64px;
+      .name {
+        font-size: 13px;
+      }
+      .desc {
+        user-select: none;
+        color: #888888;
+        font-size: 10px;
+      }
+    }
+  }
+
+  .operation {
+    position: relative;
+    height: 36px;
+    .lastBuild {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      .tag {
+        background-color: #096dd9;
+        border-radius: 4px;
+        font-size: 10px;
+        padding: 1px 5px;
+        margin-left: 6px;
+        color: #ffffff;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+    .favor {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 70px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding-top: 4px;
+    }
+    .buildBar {
+      position: absolute;
+      width: 64px;
+      height: 24px;
+      top: 0;
+      bottom: 0;
+      right: 6px;
+      margin: auto;
+      background-color: #096dd9;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+      overflow: hidden;
+      transition: all 0.5s;
+      z-index: 1;
+      .buildBtn {
+        line-height: 24px;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        font-size: 11px;
+      }
+      &.disabled {
+        background-color: #40a9ff;
+      }
+      &.build {
+        width: 100%;
+        height: 100%;
+        border-radius: 2px;
+        background-color: #bae7ff;
+        right: 0;
+        .stageBar {
+          @margin: 6px;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: @margin;
+          height: calc(100% - @margin * 2);
+          margin: auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-radius: 3px;
+          font-size: 12px;
+          color: #ffffff;
+          overflow: hidden;
+          transition: all 0.5s;
+          padding: 0 6px;
+          .name {
+            width: 70%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+}
+
+[react-component='Connector'] {
+  .blank {
+    height: @ConnectorHeight;
+    width: 100%;
+    background-color: aqua;
+  }
+  .fixedBot {
+    position: fixed;
+    bottom: 0;
+    height: @ConnectorHeight;
+    width: 100%;
+    border-top: 1px solid #333333;
+    background-color: var(--vscode-editor-background);
+    .connectBar {
+      position: absolute;
+      bottom: 0;
+      height: @ConnectorHeight;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      .success {
+        color: #389e0d;
+        margin-right: 10px;
+      }
+      .failed {
+        color: #cf1322;
+        margin-right: 10px;
+      }
+    }
+  }
+}

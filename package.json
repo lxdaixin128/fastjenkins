@@ -1,0 +1,111 @@
+{
+  "name": "fastjenkins",
+  "version": "1.0.0",
+  "description": "vscode-plugin",
+  "main": "./dist/extension.js",
+  "author": "MorningWinter",
+  "license": "MIT",
+  "icon": "static/jenkins.png",
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/daffodil/fastjenkins"
+  },
+  "activationEvents": [
+    "onView:fastJenkins.sidebarView",
+    "onCommand:fastjenkins.helloWorld"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "fast-jenkins",
+          "title": "Fast Jenkins: 快速部署",
+          "icon": "static/jenkins.svg"
+        }
+      ]
+    },
+    "views": {
+      "fast-jenkins": [
+        {
+          "id": "fastJenkins.sidebarView",
+          "type": "webview",
+          "name": ""
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sidebarView.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "static/light/refresh.svg",
+          "dark": "static/dark/refresh.svg"
+        }
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "sidebarView.refreshEntry",
+          "when": "view == fastJenkins.sidebarView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "FastJenkins",
+      "properties": {
+        "fastjenkins.apiToken": {
+          "type": "string",
+          "default": null,
+          "description": "Jenkins 用户 API Token"
+        },
+        "fastjenkins.userId": {
+          "type": "string",
+          "default": null,
+          "description": "Jenkins 用户 ID"
+        },
+        "fastjenkins.domain": {
+          "type": "string",
+          "default": null,
+          "description": "Jenkins 域名"
+        },
+        "fastjenkins.propertyFilter": {
+          "type": "string",
+          "default": null,
+          "description": "不需要显示的属性字段(用','隔开)"
+        }
+      }
+    }
+  },
+  "engines": {
+    "vscode": "^1.66.0"
+  },
+  "scripts": {
+    "vscode:prepublish": "node build/package.js",
+    "build": "node build/package.js",
+    "package": "vsce package",
+    "watch": "node build/preLaunchTask.js",
+    "lint:prettier": "prettier --write ."
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "nprogress": "^0.2.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.23",
+    "@types/nprogress": "^0.2.0",
+    "@types/react": "^17.0.43",
+    "@types/react-dom": "^17.0.14",
+    "@types/vscode": "^1.66.0",
+    "antd": "^4.19.5",
+    "axios": "^0.26.1",
+    "esbuild": "^0.14.30",
+    "esbuild-plugin-less": "^1.1.6",
+    "less": "^4.1.2",
+    "prettier": "^2.6.2",
+    "typescript": "^4.6.3"
+  }
+}

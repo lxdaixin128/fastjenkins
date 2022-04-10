@@ -1,0 +1,36 @@
+[react-component='Tabs'] {
+  @tabsHeight: 48px;
+  position: relative;
+  height: 100%;
+  .tabs {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px;
+    width: 100%;
+    height: @tabsHeight;
+    background-color: #bae7ff;
+    box-shadow: 0 0 2px #1890ff inset;
+    border-radius: 6px;
+    .tab {
+      text-align: center;
+      flex: 1;
+      z-index: 9;
+      user-select: none;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s;
+    }
+  }
+
+  .content {
+    position: relative;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    height: calc(100% - @tabsHeight);
+  }
+}
