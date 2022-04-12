@@ -7,6 +7,17 @@
     padding: 8px 8px 0 8px;
     height: calc(100% - @ConnectorHeight);
   }
+
+  .search {
+    padding: 8px 2px 0px;
+    .ant-input {
+      font-size: 16px;
+      &::-webkit-input-placeholder {
+        color: #777777;
+      }
+    }
+  }
+
   .emptyJobs {
     height: 100%;
     display: flex;
@@ -27,7 +38,6 @@
     position: relative;
     padding: 6px;
     border-bottom: 2px solid #333333;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -39,6 +49,7 @@
     }
     .icon {
       width: 40px;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;

@@ -6,6 +6,7 @@ import Connector from './components/Connector';
 import JobItem from './components/JobItem';
 import { Tabs, TabPane } from '@/src/components/Tab';
 import { Job, SettingSyncMsg } from '@/src/types';
+import { Input } from 'antd';
 interface Tab {
   name: string;
   key: string;
@@ -15,6 +16,8 @@ interface Tab {
 function Home() {
   const { state, dispatch } = useContext(AppContext);
   const [jobs, setJobs] = useState<Job[]>([]);
+
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (!state.connected) return;
@@ -37,8 +40,18 @@ function Home() {
     });
   }, []);
 
+  const searchChange = (event: any) => {
+    const {
+      target: { value },
+    } = event;
+    setSearch(value);
+  };
+
   const tabs = useMemo<Tab[]>(() => {
     const favorJobs = jobs.filter((job: Job) => state.favors.includes(job.name));
+
+    const searchJobs = jobs.filter((job: Job) => job.name.includes(search));
+
     return [
       {
         name: '收藏',
@@ -60,8 +73,11 @@ function Home() {
         key: '1',
         content: (
           <>
-            {jobs.length ? (
-              jobs.map((job: Job) => {
+            <div className="search">
+              <Input value={search} placeholder="检索" onChange={searchChange} />
+            </div>
+            {searchJobs.length ? (
+              searchJobs.map((job: Job) => {
                 return <JobItem data={job} key={job.name} />;
               })
             ) : (
@@ -71,7 +87,7 @@ function Home() {
         ),
       },
     ];
-  }, [jobs, state.favors]);
+  }, [jobs, state.favors, search]);
 
   function callback(key: string) {
     // console.log(key);

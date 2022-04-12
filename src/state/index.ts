@@ -12,6 +12,7 @@ const getBuilding = () => {
   if (building && building.value !== '' && curStamp - building.timestamp < building.estimatedDuration) {
     return building.value;
   }
+  // 超过设置的预估过期时间(预估执行时间)则返回空，并将building置空
   setBuilding('');
   return '';
 };
