@@ -1,16 +1,3 @@
-import { MsgType } from '@/types/global';
-
-export function sendMessage(type: MsgType, data?: any): Promise<Message> {
-  return new Promise((resolve, reject) => {
-    const callback = (event: MessageEvent<Message>) => {
-      resolve(event.data);
-      window.removeEventListener('message', callback);
-    };
-    window.addEventListener('message', callback);
-    window.vscode.postMessage({ type, data });
-  });
-}
-
 /**
  * @param {number} time
  * @param {string} option

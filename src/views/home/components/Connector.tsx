@@ -1,5 +1,5 @@
 import { AppContext } from '@/src/state';
-import { sendMessage } from '@/src/utils';
+import { sendMessage } from '@/src/utils/message';
 import { MsgType } from '@/types/global';
 import { Button } from 'antd';
 import { useCallback, useContext, useEffect, useState } from 'react';

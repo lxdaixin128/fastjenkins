@@ -31,7 +31,7 @@ class SidebarViewProvider implements vscode.WebviewViewProvider {
     if (this._view) {
       this._view.show?.(true);
       this._render();
-      vscode.window.showInformationMessage('fastjenkins refreshed!');
+      // vscode.window.showInformationMessage('fastjenkins refreshed!');
     }
   }
 

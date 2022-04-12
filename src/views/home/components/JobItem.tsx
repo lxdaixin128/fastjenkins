@@ -1,15 +1,22 @@
 import { AppContext } from '@/src/state';
-import { sendMessage, formatTime } from '@/src/utils';
+import { Build, Job, Property } from '@/src/types';
+import { formatTime } from '@/src/utils';
+import { sendMessage } from '@/src/utils/message';
 import { MsgType } from '@/types/global';
 import { DownOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
-import { CSSProperties, useContext, useMemo, useState } from 'react';
+import { CSSProperties, useContext, useEffect, useMemo, useState } from 'react';
 import Favor from './Favor';
 const failedColor = '#cf1322';
 const successColor = '#389e0d';
-function JobItem(props: any) {
+
+interface JobItemProps {
+  data: Job;
+}
+
+function JobItem(props: JobItemProps) {
   const name = props.data.name;
-  const lastBuild = props.data.lastBuild;
+  const lastBuild: Build | null = props.data.lastBuild;
   const { state, dispatch } = useContext(AppContext);
   const stageInit = {
     name: '请等候...',
@@ -26,14 +33,21 @@ function JobItem(props: any) {
     return state.building === '';
   }, [state.building]);
 
+  useEffect(() => {
+    if (state.building === name) {
+      console.log('state.building', state.building, name);
+      getBuildStatus();
+    }
+  }, [state.building]);
+
   const [collapse, setCollapse] = useState(true);
-  const [properties, setProperties] = useState(props.data.properties);
+  const [properties, setProperties] = useState<Property[]>(props.data.properties);
 
   const inputChange = (index: number, event: any) => {
     const {
       target: { value },
     } = event;
-    setProperties((properties: any) => {
+    setProperties((properties: Property[]) => {
       properties[index].value = value;
       return [...properties];
     });
@@ -48,18 +62,19 @@ function JobItem(props: any) {
 
   const getBuildStatus = () => {
     const params: any = {};
+    const startTime = new Date().getTime();
     const interval = setInterval(() => {
       params._ = new Date().getTime();
       sendMessage(MsgType.BuildStatus, { jobName: name, params }).then((res: any) => {
         res = res.data;
+        console.log(res);
         params.since = res.name;
-        const isNewBuild = res.id !== lastBuild.id;
-        // console.log('res', res);
+        const isNewBuild = res.id !== lastBuild?.id;
         if (isNewBuild) {
           const stages: any[] = res.stages;
-          const lastStage = stages.length ? stages[stages.length - 1] : stageInit;
+          const lastStage = stages.length ? stages.at(-1) : stageInit;
 
-          const estimatedDuration = lastBuild.estimatedDuration || 60000;
+          const estimatedDuration = lastBuild?.estimatedDuration || 60000;
           const durationMillis = res?.durationMillis || 0;
           let percent = durationMillis / estimatedDuration;
           percent = percent > 1 ? 0.99 : percent;
@@ -102,9 +117,26 @@ function JobItem(props: any) {
             }, 3000);
           }
           setStage({ ...lastStage });
+        } else {
+          const stepTime = params._;
+          if (stepTime - startTime > 10000) {
+            // 刷新状态
+            dispatch({
+              type: 'connected',
+              payload: state.connected + 1,
+            });
+            clearInterval(interval);
+            dispatch({
+              type: 'building',
+              payload: '',
+            });
+          }
         }
       });
     }, 2000);
+    window.onunload = () => {
+      console.log(1234444444444444444);
+    };
   };
 
   const stageBarStyle = useMemo<CSSProperties>(() => {
@@ -130,31 +162,18 @@ function JobItem(props: any) {
     dispatch({
       type: 'building',
       payload: name,
+      estimatedDuration: lastBuild?.estimatedDuration || 60000,
     });
     setCollapse(true);
 
-    // dispatch({
-    //   type: 'building',
-    //   payload: name,
-    // });
-    // getBuildStatus();
-    // setTimeout(() => {
-    //   dispatch({
-    //     type: 'building',
-    //     payload: '',
-    //   });
-    // }, 2000);
-
     const params: any = {};
-    properties.forEach((property: any) => {
+    properties?.forEach((property: Property) => {
       if (property.value !== '') {
         params[property.name] = property.value;
       }
     });
     sendMessage(MsgType.Build, { jobName: name, params }).then((res: Message) => {
-      if (res.status === 200) {
-        getBuildStatus();
-      } else {
+      if (res.status !== 200) {
         dispatch({
           type: 'building',
           payload: '',
@@ -165,9 +184,9 @@ function JobItem(props: any) {
 
   return (
     <div react-component="JobItem">
-      <div className="header" title={name} onClick={toggleCollapse}>
+      <div className="header" title={name}>
         <div className="title">{name}</div>
-        <div className="icon">
+        <div className="icon" onClick={toggleCollapse}>
           {isSelfBuilding ? (
             <ThunderboltOutlined className="loadingThunder" />
           ) : (
@@ -175,9 +194,9 @@ function JobItem(props: any) {
           )}
         </div>
       </div>
-      <div className="collapseSection" style={{ height: collapse ? '0px' : 20 + 64 * properties.length + 'px' }}>
+      <div className="collapseSection" style={{ height: collapse ? '0px' : 20 + 64 * properties?.length + 'px' }}>
         <div style={{ padding: '10px' }}>
-          {properties.map((_p: any, index: number) => {
+          {properties.map((_p: Property, index: number) => {
             return (
               <div className="property" key={index}>
                 <div className="name">{_p.name}</div>
@@ -190,11 +209,21 @@ function JobItem(props: any) {
       </div>
       <div className="operation">
         <div className="lastBuild">
-          <div className="tag" style={{ backgroundColor: lastBuild.result === 'SUCCESS' ? successColor : failedColor }}>
-            #{lastBuild.id}
-          </div>
-          <div className="tag">{formatTime(lastBuild.timestamp, '{y}-{m}-{d}')}</div>
+          {lastBuild ? (
+            <>
+              <div
+                className="tag"
+                style={{ backgroundColor: lastBuild?.result === 'SUCCESS' ? successColor : failedColor }}
+              >
+                #{lastBuild?.id}
+              </div>
+              <div className="tag">{formatTime(lastBuild?.timestamp, '{y}-{m}-{d}')}</div>
+            </>
+          ) : (
+            <div className="tag">暂无构建</div>
+          )}
         </div>
+
         <div className="favor">
           <Favor name={name} />
         </div>

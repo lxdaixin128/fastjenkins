@@ -2,6 +2,7 @@ import MsgCenter from './lib/MsgCenter';
 import { MsgType } from '@/types/global';
 import { createService, getService } from './lib/JenkinsService';
 import { workspace } from 'vscode';
+import settingSync from './settings';
 let { service, settings } = getService();
 const msgCenter = new MsgCenter();
 
@@ -35,26 +36,29 @@ msgCenter.subscribe(MsgType.JobList, function () {
   const filterArray: string[] = propertyFilter?.replaceAll(' ', '').split(',') || [];
 
   return service!({
-    url: `/api/json?tree=jobs[name,property[parameterDefinitions[description,defaultParameterValue[name,value]]],lastBuild[id,duration,estimatedDuration,timestamp,result]]`,
+    url: `/api/json?tree=jobs[name,property[parameterDefinitions[description,defaultParameterValue[name,value]]],lastCompletedBuild[id,duration,estimatedDuration,timestamp,result]]`,
   }).then((res: any) => {
     res = res.data;
-    return res.jobs.map((job: any) => {
-      const properties = job.property
-        .find((e: any) => e._class === 'hudson.model.ParametersDefinitionProperty')
-        ?.parameterDefinitions.map((e: any) => {
-          return {
-            description: e.description,
-            name: e.defaultParameterValue.name,
-            value: e.defaultParameterValue.value,
-          };
-        })
-        .filter((e: any) => !filterArray.includes(e.name));
-      return {
-        name: job.name,
-        lastBuild: job.lastBuild,
-        properties,
-      };
-    });
+    return (
+      res.jobs.map((job: any) => {
+        const properties =
+          job.property
+            .find((e: any) => e._class === 'hudson.model.ParametersDefinitionProperty')
+            ?.parameterDefinitions.map((e: any) => {
+              return {
+                description: e.description,
+                name: e.defaultParameterValue.name,
+                value: e.defaultParameterValue.value,
+              };
+            })
+            .filter((e: any) => !filterArray.includes(e.name)) || [];
+        return {
+          name: job.name,
+          lastBuild: job.lastCompletedBuild,
+          properties,
+        };
+      }) || []
+    );
   });
 });
 
@@ -77,6 +81,19 @@ msgCenter.subscribe(MsgType.BuildStatus, function (data: any) {
   }).then((res: any) => {
     return res.data[0];
   });
+});
+
+/* 设置 */
+msgCenter.subscribe(MsgType.SettingSync, function ({ type, key, data }: any) {
+  if (type === 'read') {
+    return Promise.resolve(settingSync.read(key));
+  }
+
+  if (type === 'update') {
+    settingSync.update(key, data);
+  }
+
+  return Promise.resolve(null);
 });
 
 export default msgCenter;

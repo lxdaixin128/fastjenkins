@@ -5,6 +5,7 @@ declare global {
 
   interface Message {
     type: MsgType;
+    hash: string;
     status?: number;
     data?: any;
     msg?: string;
@@ -17,4 +18,7 @@ export enum MsgType {
   JobList,
   Build,
   BuildStatus,
+  GetFavor,
+  SetFavor,
+  SettingSync,
 }

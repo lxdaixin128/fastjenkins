@@ -1,27 +1,44 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { AppContext } from '@/src/state';
-import { sendMessage } from '@/src/utils';
+import { sendMessage } from '@/src/utils/message';
 import { MsgType } from '@/types/global';
 import Connector from './components/Connector';
 import JobItem from './components/JobItem';
 import { Tabs, TabPane } from '@/src/components/Tab';
+import { Job, SettingSyncMsg } from '@/src/types';
 interface Tab {
   name: string;
   key: string;
   content: JSX.Element;
 }
+
 function Home() {
   const { state, dispatch } = useContext(AppContext);
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+
   useEffect(() => {
     if (!state.connected) return;
     sendMessage(MsgType.JobList).then((res) => {
+      console.log('res', res);
       setJobs(res.data);
     });
   }, [state.connected]);
 
+  useEffect(() => {
+    const settingSyncMsg: SettingSyncMsg = {
+      type: 'read',
+      key: 'favors',
+    };
+    sendMessage(MsgType.SettingSync, settingSyncMsg).then((res: any) => {
+      dispatch({
+        type: 'favors',
+        payload: res.data,
+      });
+    });
+  }, []);
+
   const tabs = useMemo<Tab[]>(() => {
-    const favorJobs = jobs.filter((job: any) => state.favors.includes(job.name));
+    const favorJobs = jobs.filter((job: Job) => state.favors.includes(job.name));
     return [
       {
         name: '收藏',
@@ -29,7 +46,7 @@ function Home() {
         content: (
           <>
             {favorJobs.length ? (
-              favorJobs.map((job: any) => {
+              favorJobs.map((job: Job) => {
                 return <JobItem data={job} key={job.name} />;
               })
             ) : (
@@ -44,7 +61,7 @@ function Home() {
         content: (
           <>
             {jobs.length ? (
-              jobs.map((job: any) => {
+              jobs.map((job: Job) => {
                 return <JobItem data={job} key={job.name} />;
               })
             ) : (
@@ -63,7 +80,7 @@ function Home() {
   return (
     <div react-component="Home">
       <div className="tabContainer">
-        <Tabs defaultActiveKey={state.favors.length ? '0' : '1'} onChange={callback}>
+        <Tabs onChange={callback}>
           {tabs.map(({ name, key, content }: Tab) => {
             return (
               <TabPane tab={name} key={key}>

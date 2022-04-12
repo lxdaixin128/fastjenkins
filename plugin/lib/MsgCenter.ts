@@ -25,7 +25,8 @@ class MsgCenter {
               status: 200,
               type: msg.type,
               data,
-            });
+              hash: msg.hash,
+            } as Message);
           })
           .catch((err) => {
             webview.postMessage({

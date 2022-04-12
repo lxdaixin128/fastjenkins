@@ -4,24 +4,24 @@
 
 快速访问 `jenkins服务` 并 `执行构建`
 
-![userId](static/guide/ui.jpg)
+![userId](https://mz-framework-dev.oss-cn-beijing.aliyuncs.com/fastjenkins/ui.jpg)
 
 ### 使用说明
 
-1.  打开 vscode 设置搜索 `fastjenkins`, 配置你的 jenkins 用户信息
+1. 打开 vscode 设置搜索 `fastjenkins`, 配置你的 jenkins 用户信息
 
-- domain: 你的`jenkins服务的Url`, `IP`是被允许的.
-- userId: jenkins 登录的账号.
+   > domain: 你的`jenkins服务的Url`, `IP`是被允许的.
+   > userId: jenkins 登录的账号.
 
-  ![userId](static/guide/userId.jpg)
+   ![userId](https://mz-framework-dev.oss-cn-beijing.aliyuncs.com/fastjenkins/userId.jpg)
 
-- API Token: 登录你的 jenkins 服务, 通过`用户设置界面`获取
+   > API Token: 登录你的 jenkins 服务, 通过`用户设置界面`获取
 
-  ![userId](static/guide/apiToken.jpg)
+   ![userId](https://mz-framework-dev.oss-cn-beijing.aliyuncs.com/fastjenkins/apiToken.jpg)
 
-2.  在左侧面板进行构建操作
+2. 在左侧面板进行构建操作
 
-    ![userId](static/guide/build.jpg)
+   ![userId](https://mz-framework-dev.oss-cn-beijing.aliyuncs.com/fastjenkins/build.jpg)
 
 ### 改进和建议
 

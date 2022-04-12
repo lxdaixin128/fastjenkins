@@ -70,22 +70,22 @@
         "fastjenkins.apiToken": {
           "type": "string",
           "default": null,
-          "description": "Jenkins 用户 API Token"
+          "description": "Jenkins 用户 API Token: 通过登录jenkins服务 -> 用户设置获取"
         },
         "fastjenkins.userId": {
           "type": "string",
           "default": null,
-          "description": "Jenkins 用户 ID"
+          "description": "Jenkins 用户 ID: 登录jenkins服务的账户"
         },
         "fastjenkins.domain": {
           "type": "string",
           "default": null,
-          "description": "Jenkins 域名"
+          "description": "Jenkins 域名: 可以使用 https://IP:port 形式"
         },
         "fastjenkins.propertyFilter": {
           "type": "string",
           "default": null,
-          "description": "项目展开后不需要显示的属性字段(用','隔开)"
+          "description": "项目属性过滤: 项目展开后过滤(不显示)的属性字段(用英文逗号隔开)"
         }
       }
     }
@@ -97,7 +97,7 @@
     "vscode:prepublish": "node build/package.js",
     "build": "node build/package.js",
     "package": "vsce package --no-yarn",
-    "publish": "vsce publish",
+    "publish": "vsce publish --no-yarn",
     "watch": "node build/preLaunchTask.js",
     "lint:prettier": "prettier --write ."
   },
