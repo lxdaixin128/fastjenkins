@@ -33,6 +33,7 @@ class MsgCenter {
               status: 500,
               type: msg.type,
               message: '连接失败',
+              hash: msg.hash,
             });
           });
       }

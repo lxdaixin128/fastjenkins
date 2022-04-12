@@ -73,13 +73,15 @@ function Home() {
         key: '1',
         content: (
           <>
-            <div className="search">
-              <Input value={search} placeholder="检索" onChange={searchChange} />
-            </div>
             {searchJobs.length ? (
-              searchJobs.map((job: Job) => {
-                return <JobItem data={job} key={job.name} />;
-              })
+              <>
+                <div className="search">
+                  <Input value={search} placeholder="检索" onChange={searchChange} />
+                </div>
+                {searchJobs.map((job: Job) => {
+                  return <JobItem data={job} key={job.name} />;
+                })}
+              </>
             ) : (
               <div className="emptyJobs">暂无项目</div>
             )}

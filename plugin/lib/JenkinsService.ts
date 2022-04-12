@@ -46,12 +46,13 @@ function tansParams(params: any) {
 
 export function createService() {
   const { userId, apiToken, domain } = workspace.getConfiguration('fastjenkins');
-
-  jenkins.settings = {
-    userId,
-    apiToken,
-    domain,
-  };
+  if (userId && apiToken && domain) {
+    jenkins.settings = {
+      userId,
+      apiToken,
+      domain,
+    };
+  }
 
   // 创建axios实例
   jenkins.service = axios.create({

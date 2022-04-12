@@ -58,7 +58,7 @@ function Connector() {
         return (
           <div>
             <span className="failed">连接失败! </span>
-            尝试
+            请检查配置和网络
             <Button size="small" type="link" onClick={connect}>
               重新连接
             </Button>

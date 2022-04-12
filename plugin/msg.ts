@@ -16,18 +16,20 @@ msgCenter.subscribe(MsgType.Connect, function () {
   const jenkins = createService();
   service = jenkins.service;
   settings = jenkins.settings;
-  return service!({
-    url: `/user/${settings?.userId}/api/json`,
-  }).then((res: any) => {
-    res = res.data;
-    const { fullName: userName, id: userId } = res;
-    const email = res.property.find((e: any) => e._class === 'hudson.tasks.Mailer$UserProperty')?.address;
-    return {
-      userName,
-      userId,
-      email,
-    };
-  });
+  return settings
+    ? service!({
+        url: `/user/${settings?.userId}/api/json`,
+      }).then((res: any) => {
+        res = res.data;
+        const { fullName: userName, id: userId } = res;
+        const email = res.property.find((e: any) => e._class === 'hudson.tasks.Mailer$UserProperty')?.address;
+        return {
+          userName,
+          userId,
+          email,
+        };
+      })
+    : Promise.reject();
 });
 
 /* 获取Job列表 */
