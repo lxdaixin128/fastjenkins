@@ -7,6 +7,7 @@ export interface Build {
 
 export interface Job {
   name: string;
+  alia?: string;
   lastBuild: Build | null;
   properties: any[];
 }
@@ -17,7 +18,7 @@ export interface Property {
   value: string;
 }
 
-export interface SettingSyncMsg {
+export interface StorageMsg {
   type: 'read' | 'update';
   key: string;
   data?: any;

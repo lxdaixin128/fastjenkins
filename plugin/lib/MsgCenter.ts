@@ -1,7 +1,6 @@
 import { Webview, workspace } from 'vscode';
-import { MsgType } from '@/types/global';
 import { AxiosPromise } from 'axios';
-
+import { MsgType } from '@/types';
 interface MsgReducer {
   (value?: any): Promise<any> | AxiosPromise;
 }

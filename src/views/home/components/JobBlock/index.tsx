@@ -1,23 +1,34 @@
 import { AppContext } from '@/src/state';
 import { Build, Job, Property } from '@/src/types';
+import { MsgType } from '@/types';
 import { formatTime } from '@/src/utils';
 import { sendMessage } from '@/src/utils/message';
-import { MsgType } from '@/types/global';
 import { DownOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { CSSProperties, useContext, useEffect, useMemo, useState } from 'react';
+import EditableBlock from './EditableBlock';
 import Favor from './Favor';
 const failedColor = '#cf1322';
 const successColor = '#389e0d';
 
-interface JobItemProps {
+interface JobBlockProps {
   data: Job;
 }
 
-function JobItem(props: JobItemProps) {
-  const name = props.data.name;
-  const lastBuild: Build | null = props.data.lastBuild;
+function JobBlock(props: JobBlockProps) {
   const { state, dispatch } = useContext(AppContext);
+  const name = props.data.name;
+  const alia = props.data.alia || name;
+  const onNameChange = (value: string) => {
+    const payload = { ...state.alias };
+    payload[name] = value;
+    dispatch({
+      type: 'alias',
+      payload,
+    });
+  };
+  const lastBuild: Build | null = props.data.lastBuild;
+
   const stageInit = {
     name: '请等候...',
     percent: 0,
@@ -33,9 +44,11 @@ function JobItem(props: JobItemProps) {
     return state.building === '';
   }, [state.building]);
 
+  /*
+   * 任务名添加到全局构建集合中后开始获取构建任务
+   */
   useEffect(() => {
     if (state.building === name) {
-      console.log('state.building', state.building, name);
       getBuildStatus();
     }
   }, [state.building]);
@@ -43,6 +56,9 @@ function JobItem(props: JobItemProps) {
   const [collapse, setCollapse] = useState(true);
   const [properties, setProperties] = useState<Property[]>(props.data.properties);
 
+  /*
+   * Job属性编辑
+   */
   const inputChange = (index: number, event: any) => {
     const {
       target: { value },
@@ -53,6 +69,9 @@ function JobItem(props: JobItemProps) {
     });
   };
 
+  /*
+   * JobBlock折叠切换
+   */
   const toggleCollapse = () => {
     if (isSelfBuilding) {
       return;
@@ -60,14 +79,22 @@ function JobItem(props: JobItemProps) {
     setCollapse(!collapse);
   };
 
+  /*
+   * 获取构建进度（定时器循环）
+   */
   const getBuildStatus = () => {
-    const params: any = {};
+    interface BuildStatusParams {
+      _: number;
+      since?: string;
+    }
+    const params: BuildStatusParams = {
+      _: 0,
+    };
     const startTime = new Date().getTime();
     const interval = setInterval(() => {
       params._ = new Date().getTime();
       sendMessage(MsgType.BuildStatus, { jobName: name, params }).then((res: any) => {
         res = res.data;
-        console.log(res);
         params.since = res.name;
         const isNewBuild = res.id !== lastBuild?.id;
         if (isNewBuild) {
@@ -77,10 +104,10 @@ function JobItem(props: JobItemProps) {
           const estimatedDuration = lastBuild?.estimatedDuration || 60000;
           const durationMillis = res?.durationMillis || 0;
           let percent = durationMillis / estimatedDuration;
-          percent = percent > 1 ? 0.99 : percent;
+          percent = percent > 1 ? 0.95 : percent;
           lastStage.percent = percent;
           lastStage.durationMillis = (durationMillis / 1000).toFixed(1) + 's';
-
+          lastStage.status = res.status;
           if (res.status === 'SUCCESS') {
             // 刷新状态
             dispatch({
@@ -134,11 +161,11 @@ function JobItem(props: JobItemProps) {
         }
       });
     }, 2000);
-    window.onunload = () => {
-      console.log(1234444444444444444);
-    };
   };
 
+  /*
+   * 进度条样式
+   */
   const stageBarStyle = useMemo<CSSProperties>(() => {
     const { percent, status } = stage;
     let color = '#40a9ff'; // IN_PROGRESS
@@ -181,11 +208,10 @@ function JobItem(props: JobItemProps) {
       }
     });
   };
-
   return (
-    <div react-component="JobItem">
-      <div className="header" title={name}>
-        <div className="title">{name}</div>
+    <div react-component="JobBlock">
+      <div className="header">
+        <EditableBlock value={alia} default={name} trigger="dblclick" onChange={onNameChange} />
         <div className="icon" onClick={toggleCollapse}>
           {isSelfBuilding ? (
             <ThunderboltOutlined className="loadingThunder" />
@@ -245,4 +271,4 @@ function JobItem(props: JobItemProps) {
   );
 }
 
-export default JobItem;
+export default JobBlock;

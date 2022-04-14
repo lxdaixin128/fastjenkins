@@ -1,8 +1,8 @@
 import MsgCenter from './lib/MsgCenter';
-import { MsgType } from '@/types/global';
 import { createService, getService } from './lib/JenkinsService';
 import { workspace } from 'vscode';
-import settingSync from './settings';
+import storage from './storage';
+import { MsgType } from '@/types';
 let { service, settings } = getService();
 const msgCenter = new MsgCenter();
 
@@ -86,13 +86,13 @@ msgCenter.subscribe(MsgType.BuildStatus, function (data: any) {
 });
 
 /* 设置 */
-msgCenter.subscribe(MsgType.SettingSync, function ({ type, key, data }: any) {
+msgCenter.subscribe(MsgType.Storage, function ({ type, key, data }: any) {
   if (type === 'read') {
-    return Promise.resolve(settingSync.read(key));
+    return Promise.resolve(storage.read(key));
   }
 
   if (type === 'update') {
-    settingSync.update(key, data);
+    storage.update(key, data);
   }
 
   return Promise.resolve(null);

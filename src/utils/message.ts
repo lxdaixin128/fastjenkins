@@ -1,4 +1,4 @@
-import { MsgType } from '@/types/global';
+import { MsgType } from '@/types';
 
 const msgMap = new Map<string, (data: Message) => void>();
 
@@ -14,9 +14,7 @@ export function sendMessage(type: MsgType, data?: any): Promise<Message> {
       resolve(data);
       msgMap.delete(hash);
     };
-
     msgMap.set(hash, callback);
-
     window.vscode.postMessage({ type, hash, data });
   });
 }

@@ -1,12 +1,13 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { AppContext } from '@/src/state';
 import { sendMessage } from '@/src/utils/message';
-import { MsgType } from '@/types/global';
 import Connector from './components/Connector';
-import JobItem from './components/JobItem';
+import JobBlock from './components/JobBlock';
 import { Tabs, TabPane } from '@/src/components/Tab';
-import { Job, SettingSyncMsg } from '@/src/types';
+import { Job } from '@/src/types';
+import { MsgType } from '@/types';
 import { Input } from 'antd';
+import { getStorage } from '@/src/utils/storage';
 interface Tab {
   name: string;
   key: string;
@@ -16,30 +17,17 @@ interface Tab {
 function Home() {
   const { state, dispatch } = useContext(AppContext);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [search, setSearch] = useState<string>('');
 
-  const [search, setSearch] = useState('');
-
+  // 获取Jobs
   useEffect(() => {
     if (!state.connected) return;
     sendMessage(MsgType.JobList).then((res) => {
-      console.log('res', res);
       setJobs(res.data);
     });
   }, [state.connected]);
 
-  useEffect(() => {
-    const settingSyncMsg: SettingSyncMsg = {
-      type: 'read',
-      key: 'favors',
-    };
-    sendMessage(MsgType.SettingSync, settingSyncMsg).then((res: any) => {
-      dispatch({
-        type: 'favors',
-        payload: res.data,
-      });
-    });
-  }, []);
-
+  // 搜索框搜索
   const searchChange = (event: any) => {
     const {
       target: { value },
@@ -48,8 +36,10 @@ function Home() {
   };
 
   const tabs = useMemo<Tab[]>(() => {
+    jobs.forEach((job: Job) => {
+      job.alia = state.alias[job.name];
+    });
     const favorJobs = jobs.filter((job: Job) => state.favors.includes(job.name));
-
     const searchJobs = jobs.filter((job: Job) => job.name.includes(search));
 
     return [
@@ -60,7 +50,7 @@ function Home() {
           <>
             {favorJobs.length ? (
               favorJobs.map((job: Job) => {
-                return <JobItem data={job} key={job.name} />;
+                return <JobBlock data={job} key={job.name} />;
               })
             ) : (
               <div className="emptyJobs">暂无收藏</div>
@@ -76,10 +66,10 @@ function Home() {
             {searchJobs.length ? (
               <>
                 <div className="search">
-                  <Input value={search} placeholder="检索" onChange={searchChange} />
+                  <Input value={search} placeholder="搜索" onChange={searchChange} />
                 </div>
                 {searchJobs.map((job: Job) => {
-                  return <JobItem data={job} key={job.name} />;
+                  return <JobBlock data={job} key={job.name} />;
                 })}
               </>
             ) : (
@@ -89,7 +79,7 @@ function Home() {
         ),
       },
     ];
-  }, [jobs, state.favors, search]);
+  }, [jobs, state.favors, state.alias, search]);
 
   function callback(key: string) {
     // console.log(key);

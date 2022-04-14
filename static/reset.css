@@ -37,12 +37,12 @@ img {
 
 
 input:not([type='checkbox']),
-textarea {
+textarea.ant-input {
   display: block;
   width: 100%;
   border: none;
   font-family: var(--vscode-font-family);
-  padding: 0 3px;
+  padding: 0 4px;
   color: var(--vscode-input-foreground);
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);

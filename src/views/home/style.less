@@ -26,7 +26,7 @@
   }
 }
 
-[react-component='JobItem'] {
+[react-component='JobBlock'] {
   @margin: 8px;
   border: 2px solid #333333;
   border-radius: 4px;
@@ -46,6 +46,10 @@
       user-select: none;
       word-break: break-all;
       flex: 1;
+      > span {
+        display: block;
+        padding: 0 4px;
+      }
     }
     .icon {
       width: 40px;

@@ -1,3 +1,5 @@
+import { MsgType } from './index';
+
 declare global {
   interface Window {
     vscode: any;
@@ -10,15 +12,4 @@ declare global {
     data?: any;
     msg?: string;
   }
-}
-
-export enum MsgType {
-  UserSettings,
-  Connect,
-  JobList,
-  Build,
-  BuildStatus,
-  GetFavor,
-  SetFavor,
-  SettingSync,
 }

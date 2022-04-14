@@ -1,7 +1,5 @@
-import { MsgType } from '@/types/global';
 import { createContext } from 'react';
-import { sendMessage } from '@/src/utils/message';
-import { SettingSyncMsg } from '../types';
+import { setStorage } from '../utils/storage';
 const vscode = window.vscode;
 export const AppContext = createContext<any>(null);
 const favors: string[] = [];
@@ -52,13 +50,12 @@ export const appAction = (state: typeof appState, action: any) => {
       return { ...state, building: action.payload };
     case 'favors':
       const newFavors = action.payload;
-      const settingSyncMsg: SettingSyncMsg = {
-        type: 'update',
-        key: 'favors',
-        data: newFavors,
-      };
-      sendMessage(MsgType.SettingSync, settingSyncMsg);
+      setStorage('favors', newFavors);
       return { ...state, favors: newFavors };
+    case 'alias':
+      const newAlias = action.payload;
+      setStorage('alias', newAlias);
+      return { ...state, alias: newAlias };
     default:
       throw new Error();
   }

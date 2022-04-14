@@ -1,7 +1,7 @@
 import { AppContext } from '@/src/state';
 import { sendMessage } from '@/src/utils/message';
-import { MsgType } from '@/types/global';
 import { Button } from 'antd';
+import { MsgType } from '@/types';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import NProgress from 'nprogress';
 import '../style.less';
@@ -26,6 +26,7 @@ function Connector() {
           type: 'userInfo',
           payload: res.data,
         });
+        // 刷新Jobs
         dispatch({
           type: 'connected',
           payload: state.connected + 1,

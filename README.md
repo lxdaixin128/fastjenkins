@@ -10,7 +10,8 @@
 
 1. 打开 vscode 设置搜索 `fastjenkins`, 配置你的 jenkins 用户信息
 
-   > domain: 你的`jenkins服务的Url`, `IP`是被允许的.
+   > domain: 你的`Jenkins服务的Url`, 允许使用`IP:Port`的形式.
+
    > userId: jenkins 登录的账号.
 
    ![userId](https://mz-framework-dev.oss-cn-beijing.aliyuncs.com/fastjenkins/userId.jpg)
