@@ -1,10 +1,17 @@
 import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import './style.less';
-function Tabs(props: any) {
+
+interface TabsProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  defaultActiveKey?: string;
+  children: React.ReactNode[];
+  onChange?: (activeKey: string) => void;
+}
+
+function Tabs(props: TabsProps) {
   const tabsEl = useRef<HTMLDivElement | null>(null);
   const tabs = useMemo(
     () =>
-      props.children.map(({ key, props: { tab: name } }: any) => ({
+      props.children?.map(({ key, props: { tab: name } }: any) => ({
         key,
         name,
       })),
@@ -47,7 +54,8 @@ function Tabs(props: any) {
 
   const changeTab = (index: number) => {
     setCurTab(index);
-    props.onChange(tabs[index].key);
+    const onChange = props.onChange;
+    onChange && onChange(tabs[index].key);
   };
   return (
     <div react-component="Tabs">
@@ -66,7 +74,7 @@ function Tabs(props: any) {
         })}
         <div style={sliderStyle}></div>
       </div>
-      <div className="content">{props.children[curTab].props.children}</div>
+      <div className="content">{props.children[curTab]}</div>
     </div>
   );
 }

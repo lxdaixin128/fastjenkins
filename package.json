@@ -23,8 +23,7 @@
     "url": "https://gitee.com/daffodil/fastjenkins/"
   },
   "activationEvents": [
-    "onView:fastJenkins.sidebarView",
-    "onCommand:fastjenkins.helloWorld"
+    "onView:fastJenkins.sidebarView"
   ],
   "contributes": {
     "viewsContainers": {

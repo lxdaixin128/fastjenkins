@@ -2,3 +2,4 @@ node_modules
 dist
 fastjenkins-**.vsix
 yarn-error.log
+yarn.lock

@@ -83,14 +83,10 @@ function Home() {
     ];
   }, [jobs, state.favors, state.alias, search]);
 
-  function callback(key: string) {
-    // console.log(key);
-  }
-
   return (
     <div react-component="Home">
       <div className="tabContainer">
-        <Tabs onChange={callback}>
+        <Tabs>
           {tabs.map(({ name, key, content }: Tab) => {
             return (
               <TabPane tab={name} key={key}>
