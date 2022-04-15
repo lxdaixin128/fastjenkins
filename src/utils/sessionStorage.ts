@@ -9,5 +9,5 @@ export function setSessionStorage(key: string, data: any) {
 
 export function getSessionStorage(key: string) {
   const state = vscode.getState();
-  return state[key];
+  return state && state[key];
 }

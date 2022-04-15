@@ -257,7 +257,6 @@ function JobBlock(props: JobBlockProps) {
             <div className="tag">暂无构建</div>
           )}
         </div>
-
         <div className="favor">
           <Favor name={name} />
         </div>

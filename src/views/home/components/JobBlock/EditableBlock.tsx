@@ -1,5 +1,5 @@
 import { Input } from 'antd';
-import { useEffect, useRef, useState, FocusEvent, ChangeEvent } from 'react';
+import { useEffect, useRef, useState, FocusEvent, ChangeEvent, KeyboardEvent } from 'react';
 
 interface EditableBlockProps {
   value: string;
@@ -32,11 +32,11 @@ function EditableBlock(props: EditableBlockProps) {
     }
   }, [editable]);
 
-  const onInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+  const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
 
-  const onInputBlur = (event: FocusEvent<HTMLTextAreaElement>) => {
+  const onInputBlur = (event: FocusEvent<HTMLInputElement>) => {
     setEditable(false);
     const postValue = event.target.value;
     if (postValue === '') {
@@ -47,10 +47,29 @@ function EditableBlock(props: EditableBlockProps) {
     }
   };
 
+  // 回车
+  const onInputPressEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    setEditable(false);
+    const postValue = (event.target as any).value;
+    if (postValue === '') {
+      setValue(props.default);
+    }
+    if (postValue !== props.value && props.onChange) {
+      props.onChange((event.target as any).value);
+    }
+  };
+
   return (
     <div ref={blockRef} className="title">
       {editable ? (
-        <Input.TextArea ref={inputRef} value={value} autoSize onBlur={onInputBlur} onChange={onInputChange} />
+        <Input
+          ref={inputRef}
+          value={value}
+          onBlur={onInputBlur}
+          onPressEnter={onInputPressEnter}
+          onChange={onInputChange}
+        />
       ) : (
         <span title="双击修改备注">{value}</span>
       )}
