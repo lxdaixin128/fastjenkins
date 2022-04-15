@@ -8,7 +8,7 @@ export interface Build {
 export interface Job {
   name: string;
   alia?: string;
-  lastBuild: Build | null;
+  lastBuild?: Build | null;
   properties: any[];
 }
 

@@ -1,18 +1,20 @@
-import { ReactElement, useContext, useEffect, useReducer } from 'react';
+import { ReactElement, useEffect, useReducer } from 'react';
 import { AppContext, appState, appAction } from './state';
-import { getStorage } from './utils/storage';
+import { getLocalStorage } from './utils/localStorage';
 import Home from './views/home';
 function App(): ReactElement {
   const [state, dispatch] = useReducer(appAction, appState);
+
+  // 获取收藏和备注的设置信息
   useEffect(() => {
-    getStorage('favors').then((res: any) => {
+    getLocalStorage('favors').then((res: any) => {
       dispatch({
         type: 'favors',
         payload: res.data,
       });
     });
 
-    getStorage('alias').then((res: any) => {
+    getLocalStorage('alias').then((res: any) => {
       dispatch({
         type: 'alias',
         payload: res.data,

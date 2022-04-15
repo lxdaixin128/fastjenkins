@@ -7,7 +7,6 @@ import { Tabs, TabPane } from '@/src/components/Tab';
 import { Job } from '@/src/types';
 import { MsgType } from '@/types';
 import { Input } from 'antd';
-import { getStorage } from '@/src/utils/storage';
 interface Tab {
   name: string;
   key: string;
@@ -19,7 +18,10 @@ function Home() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [search, setSearch] = useState<string>('');
 
-  // 获取Jobs
+  /*
+   * 获取Jobs
+   * 监听连接状态，想要刷新Jobs只需使连接状态加1
+   */
   useEffect(() => {
     if (!state.connected) return;
     sendMessage(MsgType.JobList).then((res) => {

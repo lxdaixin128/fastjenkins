@@ -15,6 +15,7 @@ function Connector() {
     email: '',
   });
 
+  // 连接服务器（获取用户信息、设置连接状态）
   const connect = useCallback(() => {
     NProgress.start();
     sendMessage(MsgType.Connect).then((res) => {

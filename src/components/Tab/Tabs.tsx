@@ -41,7 +41,7 @@ function Tabs(props: any) {
       background: 'linear-gradient(#69c0ff, #40a9ff)',
       transition: 'left .3s',
       borderRadius: '6px',
-      boxShadow: '0 0 4px #0050b3',
+      boxShadow: '0 0 4px #40a9ff',
     };
   }, [tabs, tabsWidth, curTab]);
 

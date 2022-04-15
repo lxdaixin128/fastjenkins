@@ -8,6 +8,7 @@ import { Input } from 'antd';
 import { CSSProperties, useContext, useEffect, useMemo, useState } from 'react';
 import EditableBlock from './EditableBlock';
 import Favor from './Favor';
+import { addTask, getTasks, removeTask, Task } from '@/src/utils/tasks';
 const failedColor = '#cf1322';
 const successColor = '#389e0d';
 
@@ -19,7 +20,8 @@ function JobBlock(props: JobBlockProps) {
   const { state, dispatch } = useContext(AppContext);
   const name = props.data.name;
   const alia = props.data.alia || name;
-  const onNameChange = (value: string) => {
+  // 设置备注
+  const setAlia = (value: string) => {
     const payload = { ...state.alias };
     payload[name] = value;
     dispatch({
@@ -27,34 +29,47 @@ function JobBlock(props: JobBlockProps) {
       payload,
     });
   };
-  const lastBuild: Build | null = props.data.lastBuild;
 
-  const stageInit = {
+  const lastBuild = Object.assign(
+    {
+      id: '-1',
+      estimatedDuration: 60,
+      result: 'SUCCESS',
+      timestamp: 0,
+    },
+    props.data.lastBuild,
+  );
+
+  const progressInit = {
     name: '请等候...',
     percent: 0,
     status: 'IN_PROGRESS',
     durationMillis: '',
   };
-  const [stage, setStage] = useState(stageInit);
-  const isSelfBuilding = useMemo(() => {
-    return state.building === name;
-  }, [state.building]);
 
-  const canBuilding = useMemo(() => {
-    return state.building === '';
-  }, [state.building]);
-
-  /*
-   * 任务名添加到全局构建集合中后开始获取构建任务
-   */
+  // 初始化时查询任务列表并重现任务
   useEffect(() => {
-    if (state.building === name) {
+    const taskFinded = getTasks().find((task: Task) => task.name === name);
+    if (taskFinded) {
       getBuildStatus();
+      setIsBuilding(true);
     }
-  }, [state.building]);
+  }, []);
 
+  // 进度条
+  const [progress, setProgress] = useState(progressInit);
+  // 控制属性折叠
   const [collapse, setCollapse] = useState(true);
+  // 属性
   const [properties, setProperties] = useState<Property[]>(props.data.properties);
+  // 构建状态
+  const [isBuilding, setIsBuilding] = useState(false);
+
+  // 停止构建
+  const stopBuilding = () => {
+    setIsBuilding(false);
+    removeTask(name);
+  };
 
   /*
    * Job属性编辑
@@ -73,7 +88,7 @@ function JobBlock(props: JobBlockProps) {
    * JobBlock折叠切换
    */
   const toggleCollapse = () => {
-    if (isSelfBuilding) {
+    if (isBuilding) {
       return;
     }
     setCollapse(!collapse);
@@ -96,18 +111,19 @@ function JobBlock(props: JobBlockProps) {
       sendMessage(MsgType.BuildStatus, { jobName: name, params }).then((res: any) => {
         res = res.data;
         params.since = res.name;
-        const isNewBuild = res.id !== lastBuild?.id;
+        const isNewBuild = res.id !== lastBuild.id;
         if (isNewBuild) {
-          const stages: any[] = res.stages;
-          const lastStage = stages.length ? stages.at(-1) : stageInit;
-
-          const estimatedDuration = lastBuild?.estimatedDuration || 60000;
+          const lastStage = res.stages.at(-1);
+          const newProgress = { ...progressInit };
+          const estimatedDuration = lastBuild.estimatedDuration;
           const durationMillis = res?.durationMillis || 0;
           let percent = durationMillis / estimatedDuration;
           percent = percent > 1 ? 0.95 : percent;
-          lastStage.percent = percent;
-          lastStage.durationMillis = (durationMillis / 1000).toFixed(1) + 's';
-          lastStage.status = res.status;
+          newProgress.percent = percent;
+          newProgress.durationMillis = (durationMillis / 1000).toFixed(1) + 's';
+          newProgress.status = res.status;
+          lastStage?.name && (newProgress.name = lastStage?.name);
+
           if (res.status === 'SUCCESS') {
             // 刷新状态
             dispatch({
@@ -115,14 +131,11 @@ function JobBlock(props: JobBlockProps) {
               payload: state.connected + 1,
             });
             clearInterval(interval);
-            lastStage.percent = 1;
-            lastStage.name = '构建完成';
+            newProgress.percent = 1;
+            newProgress.name = '构建完成';
             setTimeout(() => {
-              setStage({ ...stageInit });
-              dispatch({
-                type: 'building',
-                payload: '',
-              });
+              setProgress({ ...progressInit });
+              stopBuilding();
             }, 3000);
           }
 
@@ -133,17 +146,14 @@ function JobBlock(props: JobBlockProps) {
               payload: state.connected + 1,
             });
             clearInterval(interval);
-            lastStage.percent = 1;
-            lastStage.name = '构建失败';
+            newProgress.percent = 1;
+            newProgress.name = '构建失败';
             setTimeout(() => {
-              setStage({ ...stageInit });
-              dispatch({
-                type: 'building',
-                payload: '',
-              });
+              setProgress({ ...progressInit });
+              stopBuilding();
             }, 3000);
           }
-          setStage({ ...lastStage });
+          setProgress({ ...newProgress });
         } else {
           const stepTime = params._;
           if (stepTime - startTime > 10000) {
@@ -153,10 +163,7 @@ function JobBlock(props: JobBlockProps) {
               payload: state.connected + 1,
             });
             clearInterval(interval);
-            dispatch({
-              type: 'building',
-              payload: '',
-            });
+            stopBuilding();
           }
         }
       });
@@ -167,7 +174,7 @@ function JobBlock(props: JobBlockProps) {
    * 进度条样式
    */
   const stageBarStyle = useMemo<CSSProperties>(() => {
-    const { percent, status } = stage;
+    const { percent, status } = progress;
     let color = '#40a9ff'; // IN_PROGRESS
     switch (status) {
       case 'SUCCESS':
@@ -182,15 +189,11 @@ function JobBlock(props: JobBlockProps) {
       backgroundColor: color,
       boxShadow: `0 0 4px ${color}`,
     };
-  }, [stage]);
+  }, [progress]);
 
   const build = () => {
-    if (!canBuilding) return;
-    dispatch({
-      type: 'building',
-      payload: name,
-      estimatedDuration: lastBuild?.estimatedDuration || 60000,
-    });
+    setIsBuilding(true);
+    addTask(name, lastBuild.estimatedDuration);
     setCollapse(true);
 
     const params: any = {};
@@ -201,19 +204,18 @@ function JobBlock(props: JobBlockProps) {
     });
     sendMessage(MsgType.Build, { jobName: name, params }).then((res: Message) => {
       if (res.status !== 200) {
-        dispatch({
-          type: 'building',
-          payload: '',
-        });
+        stopBuilding();
+      } else {
+        getBuildStatus();
       }
     });
   };
   return (
     <div react-component="JobBlock">
       <div className="header">
-        <EditableBlock value={alia} default={name} trigger="dblclick" onChange={onNameChange} />
+        <EditableBlock value={alia} default={name} trigger="dblclick" onChange={setAlia} />
         <div className="icon" onClick={toggleCollapse}>
-          {isSelfBuilding ? (
+          {isBuilding ? (
             <ThunderboltOutlined className="loadingThunder" />
           ) : (
             <DownOutlined style={{ transform: collapse ? 'rotateX(0deg)' : 'rotateX(180deg)' }} />
@@ -235,15 +237,15 @@ function JobBlock(props: JobBlockProps) {
       </div>
       <div className="operation">
         <div className="lastBuild">
-          {lastBuild ? (
+          {lastBuild.id !== '-1' ? (
             <>
               <div
                 className="tag"
-                style={{ backgroundColor: lastBuild?.result === 'SUCCESS' ? successColor : failedColor }}
+                style={{ backgroundColor: lastBuild.result === 'SUCCESS' ? successColor : failedColor }}
               >
-                #{lastBuild?.id}
+                #{lastBuild.id}
               </div>
-              <div className="tag">{formatTime(lastBuild?.timestamp, '{y}-{m}-{d}')}</div>
+              <div className="tag">{formatTime(lastBuild.timestamp, '{y}-{m}-{d}')}</div>
             </>
           ) : (
             <div className="tag">暂无构建</div>
@@ -253,16 +255,16 @@ function JobBlock(props: JobBlockProps) {
         <div className="favor">
           <Favor name={name} />
         </div>
-        <div className={`buildBar ${isSelfBuilding ? 'build' : ''} ${canBuilding ? '' : 'disabled'}`}>
-          {isSelfBuilding ? (
+        <div className={`buildBar ${isBuilding ? 'build' : ''}`}>
+          {isBuilding ? (
             <div className="stageBar" style={stageBarStyle}>
-              <div className="name">{stage.name}</div>
-              {/* <div>{(stage.percent * 100).toFixed(1)}%</div> */}
-              <div>{stage.durationMillis}</div>
+              <div className="name">{progress.name}</div>
+              {/* <div>{(progress.percent * 100).toFixed(1)}%</div> */}
+              <div>{progress.durationMillis}</div>
             </div>
           ) : (
-            <div className={`buildBtn ${canBuilding ? '' : 'disabled'}`} onClick={build}>
-              {canBuilding ? '开始构建' : '等待...'}
+            <div className="buildBtn" onClick={build}>
+              开始构建
             </div>
           )}
         </div>
