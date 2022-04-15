@@ -1,5 +1,5 @@
 import { AppContext } from '@/src/state';
-import { Build, Job, Property } from '@/src/types';
+import { Job, Property } from '@/src/types';
 import { MsgType } from '@/types';
 import { formatTime } from '@/src/utils';
 import { sendMessage } from '@/src/utils/message';
@@ -41,7 +41,7 @@ function JobBlock(props: JobBlockProps) {
   );
 
   const progressInit = {
-    name: '请等候...',
+    name: '初始化中...',
     percent: 0,
     status: 'IN_PROGRESS',
     durationMillis: '',
@@ -106,7 +106,7 @@ function JobBlock(props: JobBlockProps) {
       _: 0,
     };
     const startTime = new Date().getTime();
-    const interval = setInterval(() => {
+    const progressGoStep = () => {
       params._ = new Date().getTime();
       sendMessage(MsgType.BuildStatus, { jobName: name, params }).then((res: any) => {
         res = res.data;
@@ -123,7 +123,6 @@ function JobBlock(props: JobBlockProps) {
           newProgress.durationMillis = (durationMillis / 1000).toFixed(1) + 's';
           newProgress.status = res.status;
           lastStage?.name && (newProgress.name = lastStage?.name);
-
           if (res.status === 'SUCCESS') {
             // 刷新状态
             dispatch({
@@ -138,7 +137,6 @@ function JobBlock(props: JobBlockProps) {
               stopBuilding();
             }, 3000);
           }
-
           if (res.status === 'FAILED') {
             // 刷新状态
             dispatch({
@@ -167,7 +165,15 @@ function JobBlock(props: JobBlockProps) {
           }
         }
       });
-    }, 2000);
+    };
+    const interval = setInterval(
+      (() => {
+        // 立即触发一次
+        progressGoStep();
+        return progressGoStep;
+      })(),
+      2000,
+    );
   };
 
   /*
