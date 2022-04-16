@@ -1,7 +1,7 @@
 {
   "name": "fastjenkins",
   "displayName": "Fast Jenkins",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "conveniently access jenkins and build your jobs.",
   "main": "./dist/extension.js",
   "author": "MorningWinter",

@@ -31,9 +31,7 @@ function Home() {
 
   // 搜索框搜索
   const searchChange = (event: any) => {
-    const {
-      target: { value },
-    } = event;
+    const value = event.target.value;
     setSearch(value);
   };
 
@@ -42,7 +40,9 @@ function Home() {
       job.alia = state.alias[job.name];
     });
     const favorJobs = jobs.filter((job: Job) => state.favors.includes(job.name));
-    const searchJobs = jobs.filter((job: Job) => job.name.includes(search));
+    const searchJobs = jobs.filter((job: Job) => {
+      return job.name.includes(search) || job.alia?.includes(search);
+    });
 
     return [
       {
@@ -65,15 +65,13 @@ function Home() {
         key: '1',
         content: (
           <>
+            <div className="search">
+              <Input value={search} placeholder="搜索" onChange={searchChange} />
+            </div>
             {searchJobs.length ? (
-              <>
-                <div className="search">
-                  <Input value={search} placeholder="搜索" onChange={searchChange} />
-                </div>
-                {searchJobs.map((job: Job) => {
-                  return <JobBlock data={job} key={job.name} />;
-                })}
-              </>
+              searchJobs.map((job: Job) => {
+                return <JobBlock data={job} key={job.name} />;
+              })
             ) : (
               <div className="emptyJobs">暂无项目</div>
             )}

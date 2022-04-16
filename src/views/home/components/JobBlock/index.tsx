@@ -5,7 +5,7 @@ import { formatTime } from '@/src/utils';
 import { sendMessage } from '@/src/utils/message';
 import { DownOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
-import { CSSProperties, useContext, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import EditableBlock from './EditableBlock';
 import Favor from './Favor';
 import { addTask, getTasks, removeTask, Task } from '@/src/utils/tasks';
@@ -20,6 +20,7 @@ function JobBlock(props: JobBlockProps) {
   const { state, dispatch } = useContext(AppContext);
   const name = props.data.name;
   const alia = props.data.alia || name;
+  console.log('重新渲染');
   // 设置备注
   const setAlia = (value: string) => {
     const payload = { ...state.alias };
@@ -41,11 +42,14 @@ function JobBlock(props: JobBlockProps) {
   );
 
   const progressInit = {
-    name: '初始化中...',
+    name: 'init...',
     percent: 0,
     status: 'IN_PROGRESS',
     durationMillis: '',
   };
+
+  // 定时器容器
+  const interval = useRef<NodeJS.Timeout | null>(null);
 
   // 初始化时查询任务列表并重现任务
   useEffect(() => {
@@ -54,6 +58,13 @@ function JobBlock(props: JobBlockProps) {
       getBuildStatus();
       setIsBuilding(true);
     }
+    return () => {
+      // 组件卸载时清除定时器
+      if (interval.current) {
+        clearInterval(interval.current);
+        interval.current = null;
+      }
+    };
   }, []);
 
   // 进度条
@@ -129,7 +140,7 @@ function JobBlock(props: JobBlockProps) {
               type: 'connected',
               payload: state.connected + 1,
             });
-            clearInterval(interval);
+            clearInterval(interval.current!);
             newProgress.percent = 1;
             newProgress.name = '构建完成';
             setTimeout(() => {
@@ -143,7 +154,7 @@ function JobBlock(props: JobBlockProps) {
               type: 'connected',
               payload: state.connected + 1,
             });
-            clearInterval(interval);
+            clearInterval(interval.current!);
             newProgress.percent = 1;
             newProgress.name = '构建失败';
             setTimeout(() => {
@@ -160,13 +171,13 @@ function JobBlock(props: JobBlockProps) {
               type: 'connected',
               payload: state.connected + 1,
             });
-            clearInterval(interval);
+            clearInterval(interval.current!);
             stopBuilding();
           }
         }
       });
     };
-    const interval = setInterval(
+    interval.current = setInterval(
       (() => {
         // 立即触发一次
         progressGoStep();
@@ -278,4 +289,4 @@ function JobBlock(props: JobBlockProps) {
   );
 }
 
-export default JobBlock;
+export default memo(JobBlock);
