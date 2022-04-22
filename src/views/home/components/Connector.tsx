@@ -1,14 +1,24 @@
 import { AppContext } from '@/src/state';
 import { sendMessage } from '@/src/utils/message';
-import { Button } from 'antd';
+import { Button, Switch } from 'antd';
 import { MsgType } from '@/types';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import NProgress from 'nprogress';
+
 import '../style.less';
+import { SettingFilled } from '@ant-design/icons';
 function Connector() {
   const { state, dispatch } = useContext(AppContext);
 
+  // 连接状态
   const [status, setStatus] = useState(0); // 0 未连接 1 连接成功 2 连接失败
+
+  // 显示设置弹窗
+  const [modalShow, setModalShow] = useState(false);
+
+  const toggleModal = () => {
+    setModalShow(!modalShow);
+  };
+
   const [userInfo, setUserInfo] = useState({
     userName: '',
     userId: '',
@@ -17,9 +27,7 @@ function Connector() {
 
   // 连接服务器（获取用户信息、设置连接状态）
   const connect = useCallback(() => {
-    NProgress.start();
     sendMessage(MsgType.Connect).then((res) => {
-      NProgress.done();
       if (res.status === 200) {
         setStatus(1);
         setUserInfo(res.data);
@@ -44,6 +52,22 @@ function Connector() {
 
   // 初始化时自动连接
   useEffect(connect, []);
+
+  // 切换隐藏备注
+  const toggleAliasHidden = (hidden: boolean) => {
+    dispatch({
+      type: 'settings',
+      payload: ['aliasHidden', hidden],
+    });
+  };
+
+  // 切换显示隐藏的属性
+  const togglePropertiesShow = (show: boolean) => {
+    dispatch({
+      type: 'settings',
+      payload: ['propertiesShow', show],
+    });
+  };
 
   function getInfo() {
     switch (status) {
@@ -71,9 +95,21 @@ function Connector() {
   return (
     <div react-component="Connector">
       <div className="blank"></div>
-      <div className="fixedBot">
-        <div className="connectBar">{getInfo()}</div>
+      <div className="connectBar">
+        {getInfo()}
+        <SettingFilled className="icon" onClick={toggleModal} />
       </div>
+      <div className={`settingModal ${modalShow ? 'show' : ''}`}>
+        <div className="setItem">
+          <div>隐藏备注</div>
+          <Switch onChange={toggleAliasHidden} size="small" />
+        </div>
+        <div className="setItem">
+          <div>显示隐藏的属性</div>
+          <Switch onChange={togglePropertiesShow} size="small" />
+        </div>
+      </div>
+      <div className={`mask ${modalShow ? 'show' : ''}`} onClick={toggleModal}></div>
     </div>
   );
 }

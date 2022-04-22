@@ -28,7 +28,7 @@ class StorageSync {
   // 读取
   public read(key: string) {
     this._addKey(key);
-    return JSON.parse(this.context?.globalState.get(key) || '');
+    return JSON.parse(this.context?.globalState.get<string>(key) ?? '{}');
   }
 
   // 更新

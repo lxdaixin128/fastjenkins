@@ -9,7 +9,10 @@ interface UserInfo {
 interface AppState {
   connected: number;
   userInfo: UserInfo;
+  alias: string[];
   favors: string[];
+  hiddenProperties: string[];
+  settings: Record<string, boolean>;
 }
 
 interface Action {
@@ -26,7 +29,13 @@ export const appState: AppState = {
     userName: '',
     email: '',
   },
+  alias: [],
   favors: [],
+  hiddenProperties: [],
+  settings: {
+    aliasHidden: false,
+    propertiesShow: false,
+  },
 };
 
 export const appAction = (state: AppState, action: Action) => {
@@ -40,10 +49,18 @@ export const appAction = (state: AppState, action: Action) => {
       const newFavors = action.payload;
       setLocalStorage('favors', newFavors);
       return { ...state, favors: newFavors };
+    case 'hiddenProperties':
+      const newHiddenProperties = action.payload;
+      setLocalStorage('hiddenProperties', newHiddenProperties);
+      return { ...state, hiddenProperties: newHiddenProperties };
     case 'alias':
       const newAlias = action.payload;
       setLocalStorage('alias', newAlias);
       return { ...state, alias: newAlias };
+    case 'settings':
+      const [key, value] = action.payload;
+      state.settings[key] = value;
+      return { ...state };
     default:
       throw new Error();
   }

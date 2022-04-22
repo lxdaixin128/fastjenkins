@@ -5,7 +5,5 @@ export enum MsgType {
   JobList,
   Build,
   BuildStatus,
-  GetFavor,
-  SetFavor,
   Storage,
 }

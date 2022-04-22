@@ -4,11 +4,11 @@ import { MsgType } from '@/types';
 import { formatTime } from '@/src/utils';
 import { sendMessage } from '@/src/utils/message';
 import { DownOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
-import { CSSProperties, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, memo, useContext, useEffect, useMemo, useRef, useState, ChangeEvent } from 'react';
 import EditableBlock from './EditableBlock';
 import Favor from './Favor';
 import { addTask, getTasks, removeTask, Task } from '@/src/utils/tasks';
+import PropertyBlock from './PropertyBlock';
 const failedColor = '#cf1322';
 const successColor = '#389e0d';
 
@@ -19,17 +19,9 @@ interface JobBlockProps {
 function JobBlock(props: JobBlockProps) {
   const { state, dispatch } = useContext(AppContext);
   const name = props.data.name;
-  const alia = props.data.alia || name;
-  console.log('重新渲染');
-  // 设置备注
-  const setAlia = (value: string) => {
-    const payload = { ...state.alias };
-    payload[name] = value;
-    dispatch({
-      type: 'alias',
-      payload,
-    });
-  };
+  const alia = useMemo(() => {
+    return (!state.settings.aliasHidden && props.data.alia) || name;
+  }, [state.settings.aliasHidden, state.alias]);
 
   const lastBuild = Object.assign(
     {
@@ -76,6 +68,19 @@ function JobBlock(props: JobBlockProps) {
   // 构建状态
   const [isBuilding, setIsBuilding] = useState(false);
 
+  useEffect(() => {
+    let _properties = props.data.properties.map((_p: Property) => {
+      _p.isHidden = state.hiddenProperties.includes(_p.name);
+      return _p;
+    });
+
+    if (!state.settings.propertiesShow) {
+      _properties = properties.filter((_p: Property) => !_p.isHidden);
+    }
+
+    setProperties(_properties);
+  }, [state.hiddenProperties, state.settings.propertiesShow]);
+
   // 停止构建
   const stopBuilding = () => {
     setIsBuilding(false);
@@ -85,10 +90,8 @@ function JobBlock(props: JobBlockProps) {
   /*
    * Job属性编辑
    */
-  const inputChange = (index: number, event: any) => {
-    const {
-      target: { value },
-    } = event;
+  const propertyValueChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
     setProperties((properties: Property[]) => {
       properties[index].value = value;
       return [...properties];
@@ -229,8 +232,9 @@ function JobBlock(props: JobBlockProps) {
   };
   return (
     <div react-component="JobBlock">
+      {/* 标题 */}
       <div className="header">
-        <EditableBlock value={alia} default={name} trigger="dblclick" onChange={setAlia} />
+        <EditableBlock value={alia} jobName={name} editable={!state.settings.aliasHidden} trigger="dblclick" />
         <div className="icon" onClick={toggleCollapse}>
           {isBuilding ? (
             <ThunderboltOutlined className="loadingThunder" />
@@ -239,19 +243,22 @@ function JobBlock(props: JobBlockProps) {
           )}
         </div>
       </div>
+      {/* 属性 */}
       <div className="collapseSection" style={{ height: collapse ? '0px' : 20 + 64 * properties?.length + 'px' }}>
         <div style={{ padding: '10px' }}>
-          {properties.map((_p: Property, index: number) => {
-            return (
-              <div className="property" key={index}>
-                <div className="name">{_p.name}</div>
-                <Input value={_p.value} onChange={(event) => inputChange(index, event)} />
-                <div className="desc">{_p.description}</div>
-              </div>
-            );
-          })}
+          {!collapse &&
+            properties.map((_p: Property, index: number) => {
+              return (
+                <PropertyBlock
+                  data={_p}
+                  key={index}
+                  onValueChange={(event: ChangeEvent<HTMLInputElement>) => propertyValueChange(index, event)}
+                />
+              );
+            })}
         </div>
       </div>
+      {/* 操作 */}
       <div className="operation">
         <div className="lastBuild">
           {lastBuild.id !== '-1' ? (

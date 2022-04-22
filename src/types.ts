@@ -16,6 +16,7 @@ export interface Property {
   name: string;
   description: string;
   value: string;
+  isHidden?: boolean;
 }
 
 export interface StorageMsg {

@@ -1,7 +1,7 @@
 {
   "name": "fastjenkins",
   "displayName": "Fast Jenkins",
-  "version": "1.0.7",
+  "version": "1.1.8",
   "description": "conveniently access jenkins and build your jobs.",
   "main": "./dist/extension.js",
   "author": "MorningWinter",
@@ -80,11 +80,6 @@
           "type": "string",
           "default": null,
           "description": "Jenkins 域名: 可以使用 https://IP:port 形式"
-        },
-        "fastjenkins.propertyFilter": {
-          "type": "string",
-          "default": null,
-          "description": "项目属性过滤: 项目展开后过滤(不显示)的属性字段(用英文逗号隔开)"
         }
       }
     }

@@ -1,15 +1,22 @@
+import { AppContext } from '@/src/state';
 import { Input } from 'antd';
-import { useEffect, useRef, useState, FocusEvent, ChangeEvent, KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, FocusEvent, ChangeEvent, KeyboardEvent, memo, useContext } from 'react';
 
 interface EditableBlockProps {
   value: string;
   trigger?: 'click' | 'dblclick';
-  default: string;
+  jobName: string;
+  editable: boolean;
   onChange?: (value: string) => void;
 }
 
 function EditableBlock(props: EditableBlockProps) {
+  const { state, dispatch } = useContext(AppContext);
   const [value, setValue] = useState(props.value);
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value]);
 
   const trigger = props.trigger || 'click';
 
@@ -18,11 +25,18 @@ function EditableBlock(props: EditableBlockProps) {
   const inputRef = useRef<any>(null);
 
   const [editable, setEditable] = useState(false);
+
+  const editEvent = useRef(() => {
+    setEditable(true);
+  });
+
   useEffect(() => {
-    blockRef.current?.addEventListener(trigger, () => {
-      setEditable(true);
-    });
-  }, []);
+    if (props.editable) {
+      blockRef.current?.addEventListener(trigger, editEvent.current);
+    } else {
+      blockRef.current?.removeEventListener(trigger, editEvent.current);
+    }
+  }, [props.editable]);
 
   useEffect(() => {
     if (editable) {
@@ -36,14 +50,15 @@ function EditableBlock(props: EditableBlockProps) {
     setValue(event.target.value);
   };
 
+  // 输入框失去焦点
   const onInputBlur = (event: FocusEvent<HTMLInputElement>) => {
     setEditable(false);
     const postValue = event.target.value;
     if (postValue === '') {
-      setValue(props.default);
+      setValue(props.jobName);
     }
-    if (postValue !== props.value && props.onChange) {
-      props.onChange(event.target.value);
+    if (postValue !== props.value) {
+      setAlia(event.target.value);
     }
   };
 
@@ -53,11 +68,21 @@ function EditableBlock(props: EditableBlockProps) {
     setEditable(false);
     const postValue = (event.target as any).value;
     if (postValue === '') {
-      setValue(props.default);
+      setValue(props.jobName);
     }
-    if (postValue !== props.value && props.onChange) {
-      props.onChange((event.target as any).value);
+    if (postValue !== props.value) {
+      setAlia((event.target as any).value);
     }
+  };
+
+  // 设置备注
+  const setAlia = (value: string) => {
+    const payload = { ...state.alias };
+    payload[props.jobName] = value;
+    dispatch({
+      type: 'alias',
+      payload,
+    });
   };
 
   return (
@@ -77,4 +102,4 @@ function EditableBlock(props: EditableBlockProps) {
   );
 }
 
-export default EditableBlock;
+export default memo(EditableBlock);

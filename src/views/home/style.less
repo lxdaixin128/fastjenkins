@@ -61,9 +61,42 @@
         transition: all 0.3s;
         font-weight: 600;
       }
+      @keyframes shake_thunder {
+        @strength: 2px;
+        0%,
+        6%,
+        12%,
+        18%,
+        24%,
+        30%,
+        36%,
+        42%,
+        48% {
+          top: -@strength;
+        }
+        3%,
+        9%,
+        15%,
+        21%,
+        27%,
+        33%,
+        39%,
+        45%,
+        51% {
+          top: @strength;
+        }
+        52% {
+          top: 0;
+        }
+        100% {
+          top: 0;
+        }
+      }
       .loadingThunder {
         color: #ffc53d;
         font-size: 20px;
+        position: relative;
+        animation: 1.4s linear 0.5s infinite shake_thunder;
       }
     }
   }
@@ -75,7 +108,24 @@
     .property {
       height: 64px;
       .name {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         font-size: 13px;
+        user-select: none;
+        .hideBtn {
+          color: #1890ff;
+          cursor: pointer;
+          transition: color 0.3s;
+          font-size: 12px;
+          user-select: none;
+          &:hover {
+            color: #40a9ff;
+          }
+          &:active {
+            color: #69c0ff;
+          }
+        }
       }
       .desc {
         user-select: none;
@@ -89,6 +139,7 @@
     position: relative;
     height: 36px;
     .lastBuild {
+      margin-left: 4px;
       height: 100%;
       display: flex;
       align-items: center;
@@ -179,30 +230,71 @@
     width: 100%;
     background-color: aqua;
   }
-  .fixedBot {
+
+  .connectBar {
     position: fixed;
-    bottom: 0;
     height: @ConnectorHeight;
     width: 100%;
     border-top: 1px solid #333333;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 999;
     background-color: var(--vscode-editor-background);
-    .connectBar {
-      position: absolute;
-      bottom: 0;
-      height: @ConnectorHeight;
-      width: 100%;
+    .success {
+      color: #389e0d;
+      margin-right: 10px;
+    }
+    .failed {
+      color: #cf1322;
+      margin-right: 10px;
+    }
+    .icon {
+      cursor: pointer;
+    }
+  }
+  .settingModal {
+    @modalHeight: 200px;
+    @radius: 10px;
+    z-index: 998;
+    height: @modalHeight;
+    width: 100%;
+    background-color: var(--vscode-editor-background);
+    bottom: -@modalHeight;
+    position: fixed;
+    border-top-left-radius: @radius;
+    border-top-right-radius: @radius;
+    box-shadow: 0 -2px 1px #555555;
+    transition: bottom 0.3s;
+    padding: 12px 0;
+    &.show {
+      bottom: @ConnectorHeight;
+    }
+    .setItem {
+      margin: 6px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 12px;
-      .success {
-        color: #389e0d;
-        margin-right: 10px;
-      }
-      .failed {
-        color: #cf1322;
-        margin-right: 10px;
-      }
+    }
+  }
+  .mask {
+    z-index: 997;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: visibility 0.6s, opacity 0.6s;
+    visibility: hidden;
+    opacity: 0;
+    &.show {
+      visibility: visible;
+      opacity: 1;
     }
   }
 }

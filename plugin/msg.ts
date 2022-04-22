@@ -34,9 +34,6 @@ msgCenter.subscribe(MsgType.Connect, function () {
 
 /* 获取Job列表 */
 msgCenter.subscribe(MsgType.JobList, function () {
-  const { propertyFilter } = workspace.getConfiguration('fastjenkins');
-  const filterArray: string[] = propertyFilter?.replaceAll(' ', '').split(',') || [];
-
   return service!({
     url: `/api/json?tree=jobs[name,property[parameterDefinitions[description,defaultParameterValue[name,value]]],lastCompletedBuild[id,duration,estimatedDuration,timestamp,result]]`,
   }).then((res: any) => {
@@ -52,8 +49,7 @@ msgCenter.subscribe(MsgType.JobList, function () {
                 name: e.defaultParameterValue.name,
                 value: e.defaultParameterValue.value,
               };
-            })
-            .filter((e: any) => !filterArray.includes(e.name)) || [];
+            }) || [];
         return {
           name: job.name,
           lastBuild: job.lastCompletedBuild,

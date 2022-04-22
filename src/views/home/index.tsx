@@ -7,6 +7,7 @@ import { Tabs, TabPane } from '@/src/components/Tab';
 import { Job } from '@/src/types';
 import { MsgType } from '@/types';
 import { Input } from 'antd';
+import NProgress from 'nprogress';
 interface Tab {
   name: string;
   key: string;
@@ -24,7 +25,9 @@ function Home() {
    */
   useEffect(() => {
     if (!state.connected) return;
+    NProgress.start();
     sendMessage(MsgType.JobList).then((res) => {
+      NProgress.done();
       setJobs(res.data);
     });
   }, [state.connected]);

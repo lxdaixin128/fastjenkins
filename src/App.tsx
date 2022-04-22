@@ -10,7 +10,14 @@ function App(): ReactElement {
     getLocalStorage('favors').then((res: any) => {
       dispatch({
         type: 'favors',
-        payload: res.data,
+        payload: Array.from(res.data), // 首次加载返回空对象，使用array.from转换
+      });
+    });
+
+    getLocalStorage('hiddenProperties').then((res: any) => {
+      dispatch({
+        type: 'hiddenProperties',
+        payload: Array.from(res.data),
       });
     });
 

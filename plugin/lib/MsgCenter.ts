@@ -1,4 +1,4 @@
-import { Webview, workspace } from 'vscode';
+import { Webview } from 'vscode';
 import { AxiosPromise } from 'axios';
 import { MsgType } from '@/types';
 interface MsgReducer {
