@@ -74,12 +74,12 @@ function JobBlock(props: JobBlockProps) {
       return _p;
     });
 
-    if (!state.settings.propertiesShow) {
+    if (!state.settings.propertiesSwitchShow) {
       _properties = properties.filter((_p: Property) => !_p.isHidden);
     }
 
     setProperties(_properties);
-  }, [state.hiddenProperties, state.settings.propertiesShow]);
+  }, [state.hiddenProperties, state.settings.propertiesSwitchShow]);
 
   // 停止构建
   const stopBuilding = () => {

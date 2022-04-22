@@ -243,9 +243,15 @@
     padding: 0 12px;
     z-index: 999;
     background-color: var(--vscode-editor-background);
+    .info {
+      display: flex;
+      align-items: center;
+    }
     .success {
-      color: #389e0d;
-      margin-right: 10px;
+      color: #7cb305;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
     }
     .failed {
       color: #cf1322;
@@ -268,12 +274,12 @@
     border-top-right-radius: @radius;
     box-shadow: 0 -2px 1px #555555;
     transition: bottom 0.3s;
-    padding: 12px 0;
+    padding: 16px 0;
     &.show {
       bottom: @ConnectorHeight;
     }
     .setItem {
-      margin: 6px 12px;
+      margin: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;

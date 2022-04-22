@@ -37,15 +37,16 @@ function PropertyBlock(props: PropertyBlockProps) {
       <div className="name">
         <div>{_p.name}</div>
         <div>
-          {_p.isHidden ? (
-            <div className="hideBtn" onClick={showProperty}>
-              恢复显示
-            </div>
-          ) : (
-            <div className="hideBtn" onClick={hideProperty}>
-              全局隐藏
-            </div>
-          )}
+          {state.settings.propertiesSwitchShow &&
+            (_p.isHidden ? (
+              <div className="hideBtn" onClick={showProperty}>
+                恢复显示
+              </div>
+            ) : (
+              <div className="hideBtn" onClick={hideProperty}>
+                全局隐藏
+              </div>
+            ))}
         </div>
       </div>
       <Input value={_p.value} onChange={props.onValueChange} />

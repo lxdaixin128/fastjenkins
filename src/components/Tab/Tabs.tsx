@@ -33,7 +33,7 @@ function Tabs(props: TabsProps) {
     };
   }, []);
 
-  const tabsPadding = 7;
+  const tabsPadding = 4;
   const sliderStyle = useMemo<CSSProperties>(() => {
     const tabWidth = (tabsWidth - 2 * tabsPadding) / tabs.length;
     const left = curTab * tabWidth;
@@ -48,7 +48,7 @@ function Tabs(props: TabsProps) {
       background: 'linear-gradient(#69c0ff, #40a9ff)',
       transition: 'left .3s',
       borderRadius: '6px',
-      boxShadow: '0 0 4px #40a9ff',
+      boxShadow: '1px 1px 6px #0050b3',
     };
   }, [tabs, tabsWidth, curTab]);
 

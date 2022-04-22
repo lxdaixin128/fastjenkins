@@ -34,7 +34,7 @@ export const appState: AppState = {
   hiddenProperties: [],
   settings: {
     aliasHidden: false,
-    propertiesShow: false,
+    propertiesSwitchShow: false,
   },
 };
 

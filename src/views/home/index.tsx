@@ -8,6 +8,8 @@ import { Job } from '@/src/types';
 import { MsgType } from '@/types';
 import { Input } from 'antd';
 import NProgress from 'nprogress';
+NProgress.configure({ showSpinner: false });
+
 interface Tab {
   name: string;
   key: string;
